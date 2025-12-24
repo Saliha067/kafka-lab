@@ -1,0 +1,19 @@
+FROM amazonlinux:2023 
+
+# Install Java 17 and utilities
+RUN yum -y update & yum -y install \
+    java-17-amazon-corretto-headless \
+    java-17-amazon-corretto-devel \
+    hostname tar wget procps-ng systemd nc vim
+
+# Download Kafka 3.7.0 from Apache Archive
+RUN wget https://archive.apache.org/dist/kafka/3.7.0/kafka_2.13-3.7.0.tgz -O /tmp/kafka.tgz \
+    && tar -xzf /tmp/kafka.tgz -C /opt \
+    && mv /opt/kafka_2.13-3.7.0 /opt/kafka \
+    && rm /tmp/kafka.tgz
+
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+ENV PATH=$PATH:/opt/kafka/bin
+
+CMD ["/sbin/init"]

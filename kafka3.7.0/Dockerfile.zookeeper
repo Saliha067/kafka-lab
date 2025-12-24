@@ -1,0 +1,9 @@
+FROM kafka-370-base:latest
+
+COPY config/zoo.cfg /opt/kafka/config/zoo.cfg
+COPY config/zookeeper.service /etc/systemd/system/zookeeper.service
+COPY config/java.env /opt/kafka/config/java.env
+
+RUN mkdir -p /zookeeper/data /zookeeper/log
+
+CMD [ "/sbin/init" ]

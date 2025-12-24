@@ -1,0 +1,101 @@
+# Kafka 3.7.0 to 3.9.0 Upgrade Lab
+# =====================================================
+# Initial cluster setup with Kafka 3.7.0
+# Use this to start the cluster, then follow README for upgrade steps
+
+services:
+  # ZooKeeper Cluster (3 nodes)
+  zk1:
+    image: kafka-370-zk:latest
+    hostname: zk1.local
+    container_name: zk1
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/zk1-data:/zookeeper/data
+      - ./volumes/zk1-logs:/zookeeper/logs
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  zk2:
+    image: kafka-370-zk:latest
+    hostname: zk2.local
+    container_name: zk2
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/zk2-data:/zookeeper/data
+      - ./volumes/zk2-logs:/zookeeper/logs
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  zk3:
+    image: kafka-370-zk:latest
+    hostname: zk3.local
+    container_name: zk3
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/zk3-data:/zookeeper/data
+      - ./volumes/zk3-logs:/zookeeper/logs
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  # Kafka Brokers (3 nodes) - Starting with 3.7.0
+  kafka1:
+    image: kafka-370-broker:latest
+    hostname: kafka1.local
+    container_name: kafka1
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/kafka1-data:/kafka/logs
+    depends_on:
+      - zk1
+      - zk2
+      - zk3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://kafka1.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+  kafka2:
+    image: kafka-370-broker:latest
+    hostname: kafka2.local
+    container_name: kafka2
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/kafka2-data:/kafka/logs
+    depends_on:
+      - zk1
+      - zk2
+      - zk3
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_LISTENERS: PLAINTEXT://kafka2.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+  kafka3:
+    image: kafka-370-broker:latest
+    hostname: kafka3.local
+    container_name: kafka3
+    privileged: true
+    tty: true
+    volumes:
+      - ./volumes/kafka3-data:/kafka/logs
+    depends_on:
+      - zk1
+      - zk2
+      - zk3
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_LISTENERS: PLAINTEXT://kafka3.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+networks:
+  default:
+    name: kafka-370.local

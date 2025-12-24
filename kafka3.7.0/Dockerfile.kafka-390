@@ -1,0 +1,12 @@
+FROM kafka-390-base:latest
+
+# use 3.9.0 binary with protocal version 3.7 ( for upgrade compatibility )
+COPY config/server-390.properties /opt/kafka/config/server.properties
+COPY config/kafka.service /etc/systemd/system/kafka.service
+COPY config/java.env /opt/kafka/config/java.env
+COPY config/kafka_config_generator.sh /var/tmp/kafka_config_generator.sh
+RUN chmod +x /var/tmp/kafka_config_generator.sh
+
+RUN mkdir -p /kafka/logs
+
+CMD ["/sbin/init"]

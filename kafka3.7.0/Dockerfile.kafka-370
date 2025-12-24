@@ -1,0 +1,11 @@
+FROM kafka-370-base:latest
+
+COPY config/server-370.properties /opt/kafka/config/server.properties
+COPY config/kafka.service /etc/systemd/system/kafka.service
+COPY config/java.env /opt/kafka/config/java.env
+COPY config/kafka_config_generator.sh /var/tmp/kafka_config_generator.sh
+RUN chmod +x /var/tmp/kafka_config_generator.sh
+
+RUN mkdir -p /kafka/logs
+
+CMD ["/sbin/init"]
