@@ -1,0 +1,6 @@
+FROM kraft-lab-base:latest
+
+COPY config/start-kraft.sh /var/tmp/start-kraft.sh
+RUN chmod +x /var/tmp/start-kraft.sh
+
+CMD ["/sbin/init"]

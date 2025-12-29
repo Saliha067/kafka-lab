@@ -1,0 +1,14 @@
+[Unit]
+Description=Zookeeper
+After=network.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/opt/kafka/config/java.env
+ExecStart=/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zoo.cfg
+ExecStop=/opt/kafka/bin/zookeeper-server-stop.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,3 +1,15 @@
+### Build docker images
+```bash
+./docker-image-build.sh
+```
+
+### start containers with docker-compose
+```bash
+docker-compose up -d
+sleep 10
+docker ps
+```
+
 ### step 1: Initialize zookeeper 
 
 ```bash

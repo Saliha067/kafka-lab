@@ -1,7 +1,7 @@
 FROM amazonlinux:2023 
 
 # Install Java 17 and utilities
-RUN yum -y update & yum -y install \
+RUN yum -y update && yum -y install \
     java-17-amazon-corretto-headless \
     java-17-amazon-corretto-devel \
     hostname tar wget procps-ng systemd nc vim

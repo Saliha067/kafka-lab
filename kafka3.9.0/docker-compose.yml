@@ -1,0 +1,125 @@
+services:
+  # ZooKeeper Cluster (3 nodes)
+  zk1:
+    image: kraft-lab-zk:latest
+    hostname: zk1.local
+    container_name: zk1
+    privileged: true
+    tty: true
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  zk2:
+    image: kraft-lab-zk:latest
+    hostname: zk2.local
+    container_name: zk2
+    privileged: true
+    tty: true
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  zk3:
+    image: kraft-lab-zk:latest
+    hostname: zk3.local
+    container_name: zk3
+    privileged: true
+    tty: true
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk1.local:2888:3888 server.2=zk2.local:2888:3888 server.3=zk3.local:2888:3888
+
+  # Kafka Brokers (3 nodes)
+  kafka1:
+    image: kraft-lab-kafka:latest
+    hostname: kafka1.local
+    container_name: kafka1
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://kafka1.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+  kafka2:
+    image: kraft-lab-kafka:latest
+    hostname: kafka2.local
+    container_name: kafka2
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_LISTENERS: PLAINTEXT://kafka2.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+  kafka3:
+    image: kraft-lab-kafka:latest
+    hostname: kafka3.local
+    container_name: kafka3
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_LISTENERS: PLAINTEXT://kafka3.local:9092
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+
+# KRaft Controllers (3 nodes)
+  kraft1:
+    image: kraft-lab-kraft:latest
+    hostname: kraft1
+    container_name: kraft1
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_PROCESS_ROLES: controller
+      KAFKA_NODE_ID: 101
+      KAFKA_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS: kraft1:9093, kraft2:9093, kraft3:9093
+      KAFKA_LISTENERS: CONTROLLER://kraft1:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: CONTROLLER://kraft1:9093
+      KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # Directory UUIDs generated for each controller
+      INITIAL_CONTROLLERS: 101@kraft1:9093:KfL1aMqPSuGz1bX2cY3dEf,102@kraft2:9093:GhI2bNrQTvHz2cY3dZ4eFg,103@kraft3:9093:JkL3c0sRUwIa3dZ4eA5fGh
+
+  kraft2:
+    image: kraft-lab-kraft:latest
+    hostname: kraft2
+    container_name: kraft2
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_PROCESS_ROLES: controller
+      KAFKA_NODE_ID: 102
+      KAFKA_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS: kraft1:9093,kraft2:9093,kraft3:9093
+      KAFKA_LISTENERS: CONTROLLER://kraft2:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: CONTROLLER://kraft2:9093
+      KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      INITIAL_CONTROLLERS: 101@kraft1:9093:KfL1aMqPSuGz1bX2cY3dEf,102@kraft2:9093:GhI2bNrQTvHz2cY3dZ4eFg,103@kraft3:9093:JkL3c0sRUwIa3dZ4eA5fGh
+
+  kraft3:
+    image: kraft-lab-kraft:latest
+    hostname: kraft3
+    container_name: kraft3
+    privileged: true
+    tty: true
+    environment:
+      KAFKA_PROCESS_ROLES: controller
+      KAFKA_NODE_ID: 103
+      KAFKA_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS: kraft1:9093,kraft2:9093,kraft3:9093
+      KAFKA_LISTENERS: CONTROLLER://kraft3:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: CONTROLLER://kraft3:9093
+      KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CONNECT: zk1.local:2181,zk2.local:2181,zk3.local:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      INITIAL_CONTROLLERS: 101@kraft1:9093:KfL1aMqPSuGz1bX2cY3dEf,102@kraft2:9093:GhI2bNrQTvHz2cY3dZ4eFg,103@kraft3:9093:JkL3c0sRUwIa3dZ4eA5fGh
+
+networks:
+  default:
+    name: kafka-lab.local
